@@ -4,11 +4,15 @@
   "description": "A repository with solutions to some coding challenges",
   "main": "pair_of_first_and_last_digits.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx jest"
   },
   "author": " Samuel Maina",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^20.6.3"
+    "@types/jest": "^29.5.5",
+    "@types/node": "^20.6.3",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
   }
 }

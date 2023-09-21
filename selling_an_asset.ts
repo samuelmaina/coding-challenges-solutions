@@ -3,7 +3,7 @@
 //If you did not hold an asset at some moment, you could always afford to buy an asset (assume you had infinite money available).
 // What is the maximum income you could make?
 // Write a function:
-// function solution (A);
+// function solution(A);
 // that, given an array A of length N representing a record of prices over the last N days, returns the maximum income you could make.
 // As the result may be large, return its last nine digits without leading zeros (return the result modulo 1,000,000,000).
 // Examples:
@@ -15,20 +15,17 @@
 // ⚫ each element of array A is an integer within the range [0..1,000,000,000).
 
 import assert from "assert";
-
+import { randomInt } from "crypto";
+import Timer from "./Timer";
+import { log } from "console";
 const mod = 1e9;
 
-function solution(arr: number[]): number {
+function solutionDFS(arr: number[]): number {
   const n = arr.length;
-  const memo: { [key: string]: number } = {};
 
   function dfs(profit: number, isBuying: boolean, i: number): number {
-    let key = `${profit},${isBuying ? 0 : 1},${i}`;
-    if (memo[key] != undefined) {
-      return memo[key];
-    }
     if (i === n) {
-      return (memo[key] = profit);
+      return profit;
     }
 
     let maxProfit = Number.NEGATIVE_INFINITY;
@@ -43,15 +40,68 @@ function solution(arr: number[]): number {
         dfs(profit, false, i + 1)
       );
     }
-    memo[key] = maxProfit;
-    return memo[key];
+    return maxProfit;
+  }
+  return dfs(0, false, 0) % mod;
+}
+function solutionDP(arr: number[]): number {
+  const n = arr.length;
+  const dp: { [key: string]: number } = {};
+
+  function dfs(profit: number, isBuying: boolean, i: number): number {
+    const key = `${profit},${isBuying},${i}`;
+    if (dp[key] !== undefined) {
+      return dp[key];
+    }
+    if (i === n) {
+      return profit;
+    }
+
+    let maxProfit = Number.NEGATIVE_INFINITY;
+    if (isBuying) {
+      maxProfit = Math.max(
+        dfs(profit - arr[i], false, i + 1),
+        dfs(profit, true, i + 1)
+      );
+    } else {
+      maxProfit = Math.max(
+        dfs(profit + arr[i], true, i + 1),
+        dfs(profit, false, i + 1)
+      );
+    }
+    dp[key] = maxProfit;
+    return maxProfit;
   }
   return dfs(0, false, 0) % mod;
 }
 
-assert.equal(solution([4, 1, 2, 3]), 6);
-assert.equal(solution([1, 2, 3, 3, 2, 1, 5]), 7);
+assert.equal(solutionDFS([4, 1, 2, 3]), 6);
+assert.equal(solutionDFS([1, 2, 3, 3, 2, 1, 5]), 7);
 assert.equal(
-  solution([1000000000, 1, 2, 2, 1000000000, 1, 1000000000]),
+  solutionDFS([1000000000, 1, 2, 2, 1000000000, 1, 1000000000]),
   999999998
 );
+assert.equal(solutionDP([4, 1, 2, 3]), 6);
+assert.equal(solutionDP([1, 2, 3, 3, 2, 1, 5]), 7);
+assert.equal(
+  solutionDP([1000000000, 1, 2, 2, 1000000000, 1, 1000000000]),
+  999999998
+);
+let array = [];
+for (let i = 0; i < 30; i++) {
+  array.push(randomInt(1000));
+}
+
+const timer = new Timer();
+timer.start();
+solutionDFS(array);
+timer.stop();
+console.log(timer.runtimeNs());
+log(timer.runtimeMs());
+timer.reset();
+
+timer.start();
+solutionDP(array);
+timer.stop();
+console.log(timer.runtimeNs());
+log(timer.runtimeMs());
