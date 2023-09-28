@@ -36,19 +36,14 @@ export default async function main() {
   // Multiply its absolute value by 2
   // Sum up results
 
-  let calculatedValue = 0.0;
-
-  for (let item of data) {
-    calculatedValue += await calculateItem(item);
-  }
-  //   let calculatedValue: number = data.reduce(async (prev: Item, curr: Item) => {
-  //     {
-  //       //@ts-ignore
-  //       let total = (await calculateItem(prev)) + (await calculateItem(curr));
-  //       console.log(total);
-  //       return total;
-  //     }
-  //   }, 0);
-
+  let calculatedValue = data.reduce((prev: number, curr: Item): number => {
+    {
+      //@ts-ignore
+      calculateItem(curr).then((val) => {
+        prev += val;
+      });
+      return prev;
+    }
+  }, 0);
   return calculatedValue;
 }
