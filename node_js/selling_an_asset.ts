@@ -16,7 +16,7 @@
 
 import assert from "assert";
 import { randomInt } from "crypto";
-import Timer from "./Timer";
+import Timer from "../Timer";
 import { log } from "console";
 const mod = 1e9;
 
