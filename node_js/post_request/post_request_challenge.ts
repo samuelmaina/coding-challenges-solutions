@@ -15,16 +15,26 @@ app.use(express.json());
 app.post("/data", async (req: Request, res: Response, next: NextFunction) => {
   try {
     let data = req.body;
-    console.log(data);
+    if (data["nums"] === undefined) {
+      res.statusCode = 400;
+      return res.json({ message: "There is no nums prop in the body." });
+    }
+    const nums: number[] = data.nums;
+    if (nums.length < 500) {
+      res.statusCode = 400;
+      return res.json({ message: "Way too few numbers received." });
+    }
+    if (nums.length > 500) {
+      res.statusCode = 400;
+      return res.json({ message: "Way too many numbers received." });
+    }
+
     await fs.writeFile("data.json", JSON.stringify(data));
-    console.log(data);
     res.statusCode = 201;
-    res.statusMessage = "Success";
     return res.json({
       message: "Data Received successfully.",
     });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 });
@@ -35,8 +45,16 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  if (res.statusCode !== 500) {
+    return res.json({
+      message: err.message,
+    });
+  }
+
   res.statusCode = 500;
-  res.statusMessage = "This is an error";
+  res.json({
+    message: "Internal Server Error Occurred. Please try again later.",
+  });
   return res;
 };
 
