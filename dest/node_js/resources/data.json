@@ -1,6 +1,0 @@
-[
-  { "status": "settled", "value": 50 },
-  { "status": "pending", "value": 50 },
-  { "status": "settled", "value": 100 },
-  { "status": "pending", "value": 38 }
-]
